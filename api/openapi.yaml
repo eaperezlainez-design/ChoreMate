@@ -1,0 +1,223 @@
+openapi: 3.0.3
+info:
+  title: ChoreMate API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5000
+
+paths:
+
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /households:
+    get:
+      summary: List all households
+      responses:
+        '200':
+          description: List of households
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Household'
+
+    post:
+      summary: Create a household
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HouseholdInput'
+      responses:
+        '201':
+          description: Created household
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Household'
+
+  /households/{id}/members:
+    get:
+      summary: List members of a household
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HouseholdMember'
+
+  /chores:
+    get:
+      summary: List chores
+      parameters:
+        - in: query
+          name: householdId
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Chore list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Chore'
+
+    post:
+      summary: Create a chore
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChoreInput'
+      responses:
+        '201':
+          description: Created chore
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chore'
+
+  /assignments:
+    get:
+      summary: List all chore assignments
+      responses:
+        '200':
+          description: Assignment list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChoreAssignment'
+
+    post:
+      summary: Create a chore assignment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChoreAssignmentInput'
+      responses:
+        '201':
+          description: Created assignment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChoreAssignment'
+
+
+components:
+
+  schemas:
+
+    Household:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+
+    HouseholdInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+
+    HouseholdMember:
+      type: object
+      properties:
+        id:
+          type: string
+        householdId:
+          type: string
+        userId:
+          type: string
+        role:
+          type: string
+
+    Chore:
+      type: object
+      properties:
+        id:
+          type: string
+        householdId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        frequency:
+          type: string
+
+    ChoreInput:
+      type: object
+      required: [householdId, name]
+      properties:
+        householdId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        frequency:
+          type: string
+
+    ChoreAssignment:
+      type: object
+      properties:
+        id:
+          type: string
+        choreId:
+          type: string
+        assignedTo:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        status:
+          type: string
+
+    ChoreAssignmentInput:
+      type: object
+      required: [choreId, assignedTo, dueDate]
+      properties:
+        choreId:
+          type: string
+        assignedTo:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        status:
+          type: string
